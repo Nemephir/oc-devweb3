@@ -1,4 +1,5 @@
 const apiBase = `http://localhost:5678/api`
+let currentCategory = 0
 
 const main = async () => {
 	await loadWorksAndCategories()
@@ -28,7 +29,11 @@ const buildWorks = ( works ) => {
 
 const buildWork = ( work ) => {
 	const works = document.getElementById( 'works' )
-	let figure  = addElement( 'figure', {}, works )
+	let figure  = addElement( 'figure', {
+		className: 'work',
+		'data-work': work.id,
+		'data-category': work.category.id
+	}, works )
 	let image   = addElement( 'img', {
 		src        : work.imageUrl,
 		alt        : work.title,
@@ -56,6 +61,24 @@ const buildCategory = ( id, name, active = false ) => {
 		className: classNames.join( ' ' )
 	}, li )
 	addText( name, badge )
+
+	badge.addEventListener('click', e => {
+		if( currentCategory !== id ) {
+			document.querySelector('#categories .active').classList.remove('active')
+			e.target.classList.add('active')
+			currentCategory = id
+			filterWorksByCategory(id)
+		}
+	})
+}
+
+const filterWorksByCategory = (categoryId) => {
+	let works = document.querySelectorAll(`#works .work`)
+	for( let work of works ) {
+		work.style.display = categoryId === 0 || Number(work.dataset.category) === categoryId
+			? 'block'
+			: 'none'
+	}
 }
 
 /*------------------------------------------------------------
@@ -85,7 +108,13 @@ const addElement = ( type, attributes, parent ) => {
 
 	// attributes
 	for( let [ key, value ] of Object.entries( attributes ) ) {
-		element[key] = value
+		if( key.startsWith('data-') ) {
+			key = key.replace('data-', '')
+			element.dataset[key] = value
+		}
+		else {
+			element[key] = value
+		}
 	}
 
 	// parent
