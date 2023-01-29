@@ -17,6 +17,7 @@ const loadWorksAndCategories = async () => {
 	console.table( works )
 
 	buildWorks( works )
+	buildCategories( categories )
 }
 
 const buildWorks = ( works ) => {
@@ -26,7 +27,6 @@ const buildWorks = ( works ) => {
 }
 
 const buildWork = ( work ) => {
-	console.log( work )
 	const works = document.getElementById( 'works' )
 	let figure  = addElement( 'figure', {}, works )
 	let image   = addElement( 'img', {
@@ -36,6 +36,26 @@ const buildWork = ( work ) => {
 	}, figure )
 	let caption = addElement( 'figcaption', {}, figure )
 	addText( work.title, caption )
+}
+
+const buildCategories = ( categories ) => {
+	buildCategory( 0, 'Tous', true )
+	for( let i of categories ) {
+		buildCategory( i.id, i.name )
+	}
+}
+
+const buildCategory = ( id, name, active = false ) => {
+	const categories = document.getElementById( 'categories' )
+
+	const classNames = [ `badge` ]
+	if( active ) classNames.push( `active` )
+
+	let li    = addElement( 'li', {}, categories )
+	let badge = addElement( 'span', {
+		className: classNames.join( ' ' )
+	}, li )
+	addText( name, badge )
 }
 
 /*------------------------------------------------------------
